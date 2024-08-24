@@ -169,13 +169,41 @@ function writeGridToImage(grid, filename) {
   });
 }
 
+function writeGridToLargeImage(grid, filename) {
+  return new Promise((resolve, reject) => {
+    const size = grid.length;
+    const largeSize = size * 8;
+    new Jimp(largeSize, largeSize, (err, image) => {
+      if (err) reject(err);
+      
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const [r, g, b] = grid[i][j];
+          const color = Jimp.rgbaToInt(r, g, b, 255);
+          for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+              image.setPixelColor(color, j * 8 + x, i * 8 + y);
+            }
+          }
+        }
+      }
+      
+      image.write(filename, (err) => {
+        if (err) reject(err);
+        resolve();
+      });
+    });
+  });
+}
+
 async function processInput(input) {
   const hash = crypto.createHash('sha256').update(input).digest('hex');
   let grid = dataToRGBGrid(input);
   grid = drawRotatedSigmoids(grid, hash);
   grid = drawDistortedCircles(grid, hash);
   await writeGridToImage(grid, 'output.png');
-  console.log('Image has been generated and saved as output.png');
+  await writeGridToLargeImage(grid, 'outputLarge.png');
+  console.log('Images have been generated and saved as output.png and outputLarge.png');
 }
 
 // Example usage
@@ -189,4 +217,4 @@ readline.question('Enter your input: ', async (input) => {
   readline.close();
 });
 
-module.exports = { dataToRGBGrid, writeGridToImage, processInput };
+module.exports = { dataToRGBGrid, writeGridToImage, writeGridToLargeImage, processInput };
