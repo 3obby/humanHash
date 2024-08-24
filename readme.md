@@ -2,6 +2,12 @@
 
 This project is a Node.js application that generates unique, visually interesting images based on user input. It uses cryptographic hashing and various mathematical functions to create complex, deterministic patterns.
 
+## Example Output
+
+Here's an example of an image generated using the input "sigmoid":
+
+![Example Output](./outputLarge.png)
+
 ## Features
 
 - Generates a unique 64x64 pixel image based on any text input
