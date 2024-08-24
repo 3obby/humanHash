@@ -3,7 +3,7 @@
     "jimp": "^0.22.12"
   },
   "type": "module",
-  "name": "humanhash",
+  "name": "humanhashimage",
   "description": "This project is a web application that generates unique, visually interesting images based on user input. It uses cryptographic hashing and various mathematical functions to create complex, deterministic patterns directly in the browser.",
   "version": "1.0.0",
   "main": "index.js",
