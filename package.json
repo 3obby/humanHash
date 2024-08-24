@@ -2,5 +2,29 @@
   "dependencies": {
     "jimp": "^0.22.12"
   },
-  "type":"module"
+  "type": "module",
+  "name": "humanhash",
+  "description": "This project is a web application that generates unique, visually interesting images based on user input. It uses cryptographic hashing and various mathematical functions to create complex, deterministic patterns directly in the browser.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3obby/humanHash.git"
+  },
+  "keywords": [
+    "human",
+    "verify",
+    "hash",
+    "image"
+  ],
+  "author": "3obby",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3obby/humanHash/issues"
+  },
+  "homepage": "https://github.com/3obby/humanHash#readme"
 }

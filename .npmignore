@@ -1,0 +1,41 @@
+# Ignore development and test files
+node_modules/
+.git/
+
+# Ignore build artifacts
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Ignore configuration files
+.eslintrc
+.prettierrc
+.editorconfig
+
+# Ignore version control files
+.gitignore
+.gitattributes
+
+# Ignore documentation
+README.md
+CHANGELOG.md
+LICENSE
+
+# Ignore output images (if they're generated during development)
+public/output.png
+public/outputLarge.png
+
+# Ignore any temporary or cache files
+.cache/
+.tmp/
+
+# Ignore any IDE or editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore any OS generated files
+.DS_Store
+Thumbs.db
