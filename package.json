@@ -5,7 +5,7 @@
   "type": "module",
   "name": "humanhashimage",
   "description": "This project is a web application that generates unique, visually interesting images based on user input. It uses cryptographic hashing and various mathematical functions to create complex, deterministic patterns directly in the browser.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
@@ -26,5 +26,6 @@
   "bugs": {
     "url": "https://github.com/3obby/humanHash/issues"
   },
-  "homepage": "https://github.com/3obby/humanHash#readme"
+  "homepage": "https://github.com/3obby/humanHash#readme",
+  "private": false
 }

@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import Jimp from 'jimp';
 import path from 'path';
-import fs from 'fs/promises';
 
 function dataToRGBGrid(data, size = 64) {
   // Hash the input data
