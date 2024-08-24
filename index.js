@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 import Jimp from 'jimp';
+import path from 'path';
+import fs from 'fs/promises';
 
 function dataToRGBGrid(data, size = 64) {
   // Hash the input data
@@ -187,17 +189,28 @@ export async function processInput(input) {
   let grid = dataToRGBGrid(input);
   grid = drawRotatedSigmoids(grid, hash);
   grid = drawDistortedCircles(grid, hash);
-  await writeGridToImage(grid, 'public/output.png');
-  await writeGridToLargeImage(grid, 'public/outputLarge.png');
+  
+  const publicDir = path.join(process.cwd(), 'public');
+  const smallImagePath = path.join(publicDir, 'output.png');
+  const largeImagePath = path.join(publicDir, 'outputLarge.png');
+  
+  await writeGridToImage(grid, smallImagePath);
+  await writeGridToLargeImage(grid, largeImagePath);
+  
   return { small: '/output.png', large: '/outputLarge.png' };
 }
 
 // Next.js API route example
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { input } = req.body;
-    const result = await processInput(input);
-    res.status(200).json(result);
+    try {
+      const { input } = req.body;
+      const result = await processInput(input);
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error processing input:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
   } else {
     res.status(405).json({ message: 'Method not allowed' });
   }
