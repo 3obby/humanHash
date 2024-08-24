@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "jimp": "^0.22.12"
-  }
+  },
+  "scripts": {
+    "test-image": "node --experimental-modules test-image-generation.js"
+  },
+  "type":"module"
 }

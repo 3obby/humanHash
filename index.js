@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const Jimp = require('jimp');
+import crypto from 'crypto';
+import Jimp from 'jimp';
 
 function dataToRGBGrid(data, size = 64) {
   // Hash the input data
@@ -147,74 +147,58 @@ function drawDistortedCircles(grid, hash) {
   return grid;
 }
 
-function writeGridToImage(grid, filename) {
-  return new Promise((resolve, reject) => {
-    const size = grid.length;
-    new Jimp(size, size, (err, image) => {
-      if (err) reject(err);
-      
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          const [r, g, b] = grid[i][j];
-          const color = Jimp.rgbaToInt(r, g, b, 255);
-          image.setPixelColor(color, j, i);
-        }
-      }
-      
-      image.write(filename, (err) => {
-        if (err) reject(err);
-        resolve();
-      });
-    });
-  });
+async function writeGridToImage(grid, filename) {
+  const size = grid.length;
+  const image = new Jimp(size, size);
+  
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      const [r, g, b] = grid[i][j];
+      const color = Jimp.rgbaToInt(r, g, b, 255);
+      image.setPixelColor(color, j, i);
+    }
+  }
+  
+  await image.writeAsync(filename);
 }
 
-function writeGridToLargeImage(grid, filename) {
-  return new Promise((resolve, reject) => {
-    const size = grid.length;
-    const largeSize = size * 8;
-    new Jimp(largeSize, largeSize, (err, image) => {
-      if (err) reject(err);
-      
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          const [r, g, b] = grid[i][j];
-          const color = Jimp.rgbaToInt(r, g, b, 255);
-          for (let x = 0; x < 8; x++) {
-            for (let y = 0; y < 8; y++) {
-              image.setPixelColor(color, j * 8 + x, i * 8 + y);
-            }
-          }
+async function writeGridToLargeImage(grid, filename) {
+  const size = grid.length;
+  const largeSize = size * 8;
+  const image = new Jimp(largeSize, largeSize);
+  
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      const [r, g, b] = grid[i][j];
+      const color = Jimp.rgbaToInt(r, g, b, 255);
+      for (let x = 0; x < 8; x++) {
+        for (let y = 0; y < 8; y++) {
+          image.setPixelColor(color, j * 8 + x, i * 8 + y);
         }
       }
-      
-      image.write(filename, (err) => {
-        if (err) reject(err);
-        resolve();
-      });
-    });
-  });
+    }
+  }
+  
+  await image.writeAsync(filename);
 }
 
-async function processInput(input) {
+export async function processInput(input) {
   const hash = crypto.createHash('sha256').update(input).digest('hex');
   let grid = dataToRGBGrid(input);
   grid = drawRotatedSigmoids(grid, hash);
   grid = drawDistortedCircles(grid, hash);
-  await writeGridToImage(grid, 'output.png');
-  await writeGridToLargeImage(grid, 'outputLarge.png');
-  console.log('Images have been generated and saved as output.png and outputLarge.png');
+  await writeGridToImage(grid, 'public/output.png');
+  await writeGridToLargeImage(grid, 'public/outputLarge.png');
+  return { small: '/output.png', large: '/outputLarge.png' };
 }
 
-// Example usage
-const readline = require('readline').createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-readline.question('Enter your input: ', async (input) => {
-  await processInput(input);
-  readline.close();
-});
-
-module.exports = { dataToRGBGrid, writeGridToImage, writeGridToLargeImage, processInput };
+// Next.js API route example
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { input } = req.body;
+    const result = await processInput(input);
+    res.status(200).json(result);
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
+  }
+}

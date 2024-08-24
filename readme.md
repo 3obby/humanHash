@@ -6,7 +6,7 @@ This project is a Node.js application that generates unique, visually interestin
 
 Here's an example of an image generated using the input "sigmoid":
 
-![Example Output](./outputLarge.png)
+![Example Output](./public/outputLarge.png)
 
 ## Features
 
