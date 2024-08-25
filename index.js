@@ -65,8 +65,8 @@ function drawRotatedSigmoids(grid, hash) {
     const sigmoidG = Number((hashNum >> 48n) % 256n);
     const sigmoidB = Number((hashNum >> 56n) % 256n);
     
-    // Generate sigmoid width based on hash (1 to 4 pixels)
-    const sigmoidWidth = Number((hashNum >> 64n) % 4n) + 1;
+    // Generate sigmoid width based on hash (1 to 8 pixels)
+    const sigmoidWidth = Number((hashNum >> 64n) % 8n) + 1;
     
     for (let x = 0; x < size; x++) {
       for (let y = 0; y < size; y++) {
@@ -148,69 +148,26 @@ function drawDistortedCircles(grid, hash) {
   return grid;
 }
 
-async function writeGridToImage(grid, filename) {
-  const size = grid.length;
-  const image = new Jimp(size, size);
-  
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const [r, g, b] = grid[i][j];
-      const color = Jimp.rgbaToInt(r, g, b, 255);
-      image.setPixelColor(color, j, i);
-    }
-  }
-  
-  await image.writeAsync(filename);
-}
-
-async function writeGridToLargeImage(grid, filename) {
-  const size = grid.length;
-  const largeSize = size * 8;
-  const image = new Jimp(largeSize, largeSize);
-  
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const [r, g, b] = grid[i][j];
-      const color = Jimp.rgbaToInt(r, g, b, 255);
-      for (let x = 0; x < 8; x++) {
-        for (let y = 0; y < 8; y++) {
-          image.setPixelColor(color, j * 8 + x, i * 8 + y);
-        }
-      }
-    }
-  }
-  
-  await image.writeAsync(filename);
-}
-
 export async function processInput(input) {
   const hash = crypto.createHash('sha256').update(input).digest('hex');
   let grid = dataToRGBGrid(input);
   grid = drawRotatedSigmoids(grid, hash);
   grid = drawDistortedCircles(grid, hash);
   
-  const publicDir = path.join(process.cwd(), 'public');
-  const smallImagePath = path.join(publicDir, 'output.png');
-  const largeImagePath = path.join(publicDir, 'outputLarge.png');
-  
-  await writeGridToImage(grid, smallImagePath);
-  await writeGridToLargeImage(grid, largeImagePath);
-  
-  return { small: '/output.png', large: '/outputLarge.png' };
+  return grid;
 }
 
-// Next.js API route example
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    try {
-      const { input } = req.body;
-      const result = await processInput(input);
-      res.status(200).json(result);
-    } catch (error) {
-      console.error('Error processing input:', error);
-      res.status(500).json({ message: 'Internal server error' });
+export function gridToPPM(grid) {
+  const size = grid.length;
+  let ppm = `P3\n${size} ${size}\n255\n`;
+
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      const [r, g, b] = grid[i][j];
+      ppm += `${r} ${g} ${b} `;
     }
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    ppm += '\n';
   }
+
+  return Buffer.from(ppm);
 }
